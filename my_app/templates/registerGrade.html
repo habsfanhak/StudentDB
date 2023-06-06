@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body_block %}
+ <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+            <div class="col-md-12">       
+
+                <h2>Register Grade</h2>
+                <hr />
+                {% for message in messages %}
+                    <p id="messages" class="alert alert-success">{{message}}</p>
+                {% endfor %}
+                    <p>{{form.errors}}</p>
+                <form method="post" action="/register/grade/">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {% csrf_token %}
+                                    {{form.as_p}}
+                                </div>
+                            </div>
+                        </div>
+                    <input type="submit" class="btn btn-success pull-right" value="Register" />
+                </form>
+            </div>
+        </div>
+</div>
+{% endblock %}

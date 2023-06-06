@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .form import StudentForm, CourseForm
+from .form import StudentForm, CourseForm, GradeForm
 from .models import Student, Course
 from django.contrib import messages
+from django.db import IntegrityError
 
 # Create your views here.
 def home(request):
@@ -29,12 +30,39 @@ def registerCourse(request):
     if request.method == "POST":
         form = CourseForm(request.POST)
         if form.is_valid():
-            course = Course(
-                course_id=form.cleaned_data['course_id'],
-                course_name=form.cleaned_data['course_name'],
-                course_description=form.cleaned_data['course_description']
+            course_id = form.cleaned_data['course_id']
+            course_name = form.cleaned_data['course_name']
+            course_description = form.cleaned_data['course_description']
+
+            try:
+                Course.objects.create(
+                    course_id=course_id,
+                    course_name=course_name,
+                    course_description=course_description
+                )
+                messages.success(request, 'Course added.')
+
+            except IntegrityError:
+                messages.error(request, f"A course with ID {course_id} already exists.")
+
+    return render(request, 'registerCourse.html', {"form": form})
+
+def registerGrade(request):
+    form = GradeForm()
+
+    if request.method == "POST":
+        form = GradeForm(request.POST)
+        if form.is_valid():
+            course_id = form.cleaned_data['course_id']
+            student_number = form.cleaned_data['student_number']
+            result = form.cleaned_data['result']
+
+
+            Course.objects.create(
+                course_id=course_id,
+                student_number=student_number,
+                result=result
             )
-            course.save()
             messages.success(request, 'Course added.')
 
     return render(request, 'registerCourse.html', {"form": form})

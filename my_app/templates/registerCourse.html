@@ -8,9 +8,11 @@
                 <h2>Add Course</h2>
                 <hr />
                 {% for message in messages %}
-                    <p id="messages" class="alert alert-success">{{message}}</p>
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
-                    <p>{{form.errors}}</p>
+                <br>
                 <form method="post" action="/register/course/">
                         <div class="row">
                             <div class="col-md-12">

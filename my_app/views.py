@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .form import StudentForm, CourseForm, GradeForm
-from .models import Student, Course
+from .models import Student, Course, Grade
 from django.contrib import messages
 from django.db import IntegrityError
+from django.views.generic import ListView
 
 # Create your views here.
 def home(request):
@@ -58,11 +59,50 @@ def registerGrade(request):
             result = form.cleaned_data['result']
 
 
-            Course.objects.create(
+            Grade.objects.create(
                 course_id=course_id,
                 student_number=student_number,
                 result=result
             )
-            messages.success(request, 'Course added.')
+            messages.success(request, 'Grade registered.')
 
-    return render(request, 'registerCourse.html', {"form": form})
+    return render(request, 'registerGrade.html', {"form": form})
+
+def students(request):
+    data = Student.objects.all()
+    context = {'data': data}
+
+    return render(request, 'students.html', context)
+
+def student(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+    grades = Grade.objects.filter(student_number=student)
+    dynamic_width = 0
+    gpa = 0
+    for grade in grades:
+        dynamic_width += grade.result
+        if grade.result >= 80:
+            gpa += 4
+        elif grade.result >= 75:
+            gpa += 3.5
+        elif grade.result >= 70:
+            gpa += 3
+        elif grade.result >= 65:
+            gpa += 2.5
+        elif grade.result >= 60:
+            gpa += 2
+        elif grade.result >= 55:
+            gpa += 1.5
+        elif grade.result >= 50:
+            gpa += 1
+        
+    
+    if len(grades) > 0:
+        dynamic_width/=len(grades)
+        gpa/=len(grades)
+    dynamic_width/=2
+
+    if (gpa > 4):
+        gpa = 4
+
+    return render(request, 'student.html', {'student': student, 'grades': grades, 'dynamic_width' : dynamic_width, 'gpa' : gpa})

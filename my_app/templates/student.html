@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block body_block %}
+{% load my_filters %}
+
+    <style>
+
+        h3 {
+            font-size: 48px;
+        }
+        #grade_bar {
+            width: 0;
+            height: 10px;
+            background: red;
+            position: absolute;
+            animation-name: grade_bar;
+            animation-duration: 3s;
+            animation-delay: 0s;
+            animation-fill-mode: both;
+        }
+
+        #fade-in {
+        animation-name: numberAnimation;
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        }
+
+        @keyframes grade_bar {
+            from {
+                width: 0%;
+                background-color: white;
+                left: 1%;
+            }
+            to {
+                width: var(--width);
+                background-color: var(--background-color);
+                left: 1%;
+            }
+        }
+
+        @keyframes numberAnimation {
+        from { opacity: 0; }
+        to { opacity: 1; }
+        }
+
+    </style>
+
+    <div class="row">
+        <div class="col-md-12">       
+
+            {% if student %}
+                <h3>{{ student.student_name }}</h3>
+            {% endif %}
+            <hr/>
+
+            {% for grade in grades %}
+                <p><strong>{{ grade.course_id }} - {{ grade.result }}</strong></p>
+                <div id="grade_bar" style="--width: {{ grade.result }}%; --background-color: {{grade.result|rgbReturn}}"></div>
+                <br/><br/>
+            {% endfor %}
+            
+        </div>
+    </div>
+    <hr/>
+    {% if gpa|greaterThan:0 %}
+    <div class="row">
+        <h3 id="fade-in">GPA: <span id="number-counter">0</span></h3>
+    </div>
+    {% endif %}
+    <hr/>
+
+    <script>
+        function animateNumberCounter(targetNumber) {
+        const counterElement = document.getElementById('number-counter');
+        const startNumber = 0;
+        const duration = 1500;
+        const frameDuration = 20;
+        const totalFrames = Math.round(duration / frameDuration);
+        const increment = (targetNumber - startNumber) / totalFrames;
+
+        let currentNumber = startNumber;
+        let frame = 0;
+
+        const interval = setInterval(() => {
+            if (frame >= totalFrames) {
+            clearInterval(interval);
+            currentNumber = targetNumber; 
+            } else {
+            currentNumber += increment;
+            }
+
+            counterElement.textContent = currentNumber.toFixed(1);
+
+            frame++;
+        }, frameDuration);
+        }
+
+        // Convert the target GPA to a float before passing it to the function
+        const targetGPA = parseFloat("{{ gpa }}");
+        animateNumberCounter(targetGPA);
+    </script>
+    
+
+    
+{% endblock %}

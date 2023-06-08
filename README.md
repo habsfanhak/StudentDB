@@ -1,0 +1,1 @@
+This is a django app in progress that mimics a database for students. Development on this project began on June 4th 2023, and the app currently holds functionality to register courses, students, and assign grades for those students. These grades can be viewed for each student.

@@ -7,19 +7,33 @@
 
                 <h2>Add Course</h2>
                 <hr />
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div id="messages" class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
+                            <ul>         
+                                    <li>{{ message }}</li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <br>
                 <form method="post" action="/register/course/">
                         <div class="row">
                             <div class="col-md-12">
+                                {% csrf_token %}
                                 <div class="form-group">
-                                    {% csrf_token %}
-                                    {{form.as_p}}
+                                    <label for="{{ form.course_id.id_for_label }}">Course ID:</label>
+                                    {{ form.course_id}}
                                 </div>
+                                <div class="form-group">
+                                    <label for="{{ form.course_name.id_for_label }}">Course Name:</label>
+                                    {{ form.course_name }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.course_description_for_label }}">Course Description:</label>
+                                    {{ form.course_description }}
+                                </div>
+
                             </div>
                         </div>
                     <input type="submit" class="btn btn-success pull-right" value="Register" />
